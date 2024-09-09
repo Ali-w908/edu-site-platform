@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .models import Course
 from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse
+from django.contrib import messages
 
 def login_view(request):
     if request.method == 'POST':
@@ -11,6 +11,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            messages.success(request, 'You have successfully logged in!')
             return redirect('courses:dashboard')
     return render(request, 'courses/login.html')
 
@@ -30,7 +31,11 @@ def signup_view(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
+            messages.success(request, 'Your account has been created successfully!')
             return redirect('courses:dashboard')
+        else:
+            messages.error(request, 'Please correct the error below.')
     else:
         form = UserCreationForm()
     return render(request, 'courses/signup.html', {'form': form})
+    
